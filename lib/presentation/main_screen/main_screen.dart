@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:todo_app/presentation/calendar/calendar_page.dart';
 import 'package:todo_app/presentation/focus_mode/focus_mode_page.dart';
 import 'package:todo_app/presentation/home/home_page.dart';
+import 'package:todo_app/presentation/home/widgets/add_task_sheet.dart';
 import 'package:todo_app/presentation/profile/profile_page.dart';
 import 'package:todo_app/presentation/task/task_page.dart';
 
@@ -24,26 +25,25 @@ class _MainScreenState extends State<MainScreen> {
     FocusModePage(),
     ProfilePage(),
   ];
-
   final List<NavBarItem> _navBarItems = [
     NavBarItem(
-      filledIcon: Ionicons.home,
-      outlinedIcon: Ionicons.home_outline,
+      filledIcon: Icons.home_filled,
+      outlinedIcon: Icons.home_outlined,
       name: "Home",
     ),
     NavBarItem(
-      filledIcon: Ionicons.calendar,
-      outlinedIcon: Ionicons.calendar_outline,
+      filledIcon: Icons.calendar_today_rounded,
+      outlinedIcon: Icons.calendar_today_outlined,
       name: "Calendar",
     ),
     NavBarItem(
-      filledIcon: Ionicons.timer,
-      outlinedIcon: Ionicons.timer_outline,
+      filledIcon: Icons.timer_rounded,
+      outlinedIcon: Icons.timer_sharp,
       name: "Focus",
     ),
     NavBarItem(
-      filledIcon: Ionicons.person,
-      outlinedIcon: Ionicons.person_outline,
+      filledIcon: Icons.person,
+      outlinedIcon: Icons.person_outlined,
       name: "Profile",
     ),
   ];
@@ -58,7 +58,7 @@ class _MainScreenState extends State<MainScreen> {
     List<Widget> widgets = [];
 
     for (int i = 0; i < _navBarItems.length; i++) {
-      if (i == _navBarItems.length ~/ 2) {
+      if (i == _navBarItems.length ~/ 2) { 
         widgets.add(const SizedBox(width: 40));
       }
 
@@ -69,18 +69,21 @@ class _MainScreenState extends State<MainScreen> {
       widgets.add(
         GestureDetector(
           onTap: () => _onTabTapped(screenIndex),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                _currentIndex == screenIndex
-                    ? item.filledIcon
-                    : item.outlinedIcon,
-                color: _currentIndex == screenIndex ? Colors.blue : Colors.grey,
-              ),
-              SizedBox(height: 4),
-              Text(_navBarItems[i].name, style: const TextStyle(fontSize: 12)),
-            ],
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  _currentIndex == screenIndex
+                      ? item.filledIcon
+                      : item.outlinedIcon,
+                  color: _currentIndex == screenIndex ? Colors.blue : Colors.grey,
+                ),
+                SizedBox(height: 4),
+                Text(_navBarItems[i].name, style: const TextStyle(fontSize: 12)),
+              ],
+            ),
           ),
         ),
       );
@@ -96,9 +99,12 @@ class _MainScreenState extends State<MainScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          setState(() {
-            _currentIndex = 2;
-          });
+          showModalBottomSheet(
+            isScrollControlled: true,
+            elevation: 5,
+            context: context,
+            builder: (context) => AddTaskSheet(),
+          );
         },
         tooltip: 'Increment',
         child: Icon(Ionicons.add),
