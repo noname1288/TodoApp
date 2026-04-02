@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:todo_app/presentation/main_screen/main_screen.dart';
+import 'package:todo_app/core/router/app_router.dart';
 
 void main() {
   runApp(const MainApp());
@@ -11,7 +11,8 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  MaterialApp(
+    return  MaterialApp.router(
+      routerConfig: AppRouter.router,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorSchemeSeed: const Color(0xff5a73d8),
@@ -20,7 +21,6 @@ class MainApp extends StatelessWidget {
         ),
         useMaterial3: false
       ),
-      home: MainScreen(),
     );
   }
 }

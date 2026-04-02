@@ -1,87 +1,87 @@
 import 'package:flutter/material.dart';
-import 'package:todo_app/presentation/calendar/calendar_page.dart';
-import 'package:todo_app/presentation/focus_mode/focus_mode_page.dart';
-import 'package:todo_app/presentation/home/home_page.dart';
-import 'package:todo_app/presentation/home/widgets/add_task_sheet.dart';
-import 'package:todo_app/presentation/profile/profile_page.dart';
-import 'package:todo_app/presentation/task/task_page.dart';
-
+import 'package:go_router/go_router.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:todo_app/presentation/home/widgets/add_task_sheet.dart';
 
-class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+import '../../core/router/route_path.dart';
 
-  @override
-  State<MainScreen> createState() => _MainScreenState();
-}
+class MainScreen extends StatelessWidget {
+  final Widget child;
+  final String location;
 
-class _MainScreenState extends State<MainScreen> {
-  int _currentIndex = 0;
+  const MainScreen({super.key, required this.child, required this.location});
 
-  final List<Widget> _screens = [
-    HomePage(),
-    CalendarPage(),
-    TaskPage(),
-    FocusModePage(),
-    ProfilePage(),
-  ];
-  final List<NavBarItem> _navBarItems = [
-    NavBarItem(
-      filledIcon: Icons.home_filled,
-      outlinedIcon: Icons.home_outlined,
-      name: "Home",
-    ),
-    NavBarItem(
-      filledIcon: Icons.calendar_today_rounded,
-      outlinedIcon: Icons.calendar_today_outlined,
-      name: "Calendar",
-    ),
-    NavBarItem(
-      filledIcon: Icons.timer_rounded,
-      outlinedIcon: Icons.timer_sharp,
-      name: "Focus",
-    ),
-    NavBarItem(
-      filledIcon: Icons.person,
-      outlinedIcon: Icons.person_outlined,
-      name: "Profile",
-    ),
-  ];
-
-  void _onTabTapped(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
+  int _calculateSelectedIndex(String location) {
+    if (location.startsWith(RoutePaths.calendar)) return 1;
+    if (location.startsWith(RoutePaths.focusMode)) return 2;
+    if (location.startsWith(RoutePaths.profile)) return 3;
+    return 0;
   }
 
-  List<Widget> _buildNavItems() {
-    List<Widget> widgets = [];
+  void _onTabTapped(BuildContext context, int index) {
+    switch (index) {
+      case 0:
+        context.go(RoutePaths.home);
+        break;
+      case 1:
+        context.go(RoutePaths.calendar);
+        break;
+      case 2:
+        context.go(RoutePaths.focusMode);
+        break;
+      case 3:
+        context.go(RoutePaths.profile);
+        break;
+    }
+  }
 
-    for (int i = 0; i < _navBarItems.length; i++) {
-      if (i == _navBarItems.length ~/ 2) { 
+  List<Widget> _buildNavItems(BuildContext context, int selectedIndex) {
+    final navBarItems = [
+      NavBarItem(
+        filledIcon: Icons.home_filled,
+        outlinedIcon: Icons.home_outlined,
+        name: 'Home',
+      ),
+      NavBarItem(
+        filledIcon: Icons.calendar_today_rounded,
+        outlinedIcon: Icons.calendar_today_outlined,
+        name: 'Calendar',
+      ),
+      NavBarItem(
+        filledIcon: Icons.timer_rounded,
+        outlinedIcon: Icons.timer_outlined,
+        name: 'Focus',
+      ),
+      NavBarItem(
+        filledIcon: Icons.person,
+        outlinedIcon: Icons.person,
+        name: 'Profile',
+      ),
+    ];
+    final widgets = <Widget>[];
+
+    for (int i = 0; i < navBarItems.length; i++) {
+      if (i == navBarItems.length ~/ 2) {
         widgets.add(const SizedBox(width: 40));
       }
 
-      final item = _navBarItems[i];
-
-      int screenIndex = i < 2 ? i : i + 1;
+      final item = navBarItems[i];
+      final isSelected = selectedIndex == i;
 
       widgets.add(
         GestureDetector(
-          onTap: () => _onTabTapped(screenIndex),
+          onTap: () => _onTabTapped(context, i),
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+            padding: EdgeInsets.symmetric(horizontal: 8),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(
-                  _currentIndex == screenIndex
-                      ? item.filledIcon
-                      : item.outlinedIcon,
-                  color: _currentIndex == screenIndex ? Colors.blue : Colors.grey,
+                  isSelected ? item.filledIcon : item.outlinedIcon,
+                  color: isSelected ? Colors.blue : Colors.grey,
                 ),
                 SizedBox(height: 4),
-                Text(_navBarItems[i].name, style: const TextStyle(fontSize: 12)),
+                Text(navBarItems[i].name, style: const TextStyle(fontSize: 12)),
               ],
             ),
           ),
@@ -94,8 +94,10 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final selectedIndex = _calculateSelectedIndex(location);
+
     return Scaffold(
-      body: _screens[_currentIndex],
+      body: child,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -113,7 +115,7 @@ class _MainScreenState extends State<MainScreen> {
         padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: _buildNavItems(),
+          children: _buildNavItems(context, selectedIndex),
         ),
       ),
     );
